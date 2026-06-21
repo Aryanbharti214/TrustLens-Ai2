@@ -116,7 +116,20 @@ def post_autonomy_level(req: AutonomyLevelRequest, db=Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 # Serve Vite assets
 app.mount("/assets", StaticFiles(directory="dist/assets"), name="assets")
+from fastapi.responses import FileResponse
+import os
 
+@app.get("/landing.html")
+async def landing():
+    return FileResponse("dist/landing.html")
+
+@app.get("/favicon.svg")
+async def favicon():
+    return FileResponse("dist/favicon.svg")
+
+@app.get("/icons.svg")
+async def icons():
+    return FileResponse("dist/icons.svg")
 # Serve React frontend
 @app.get("/")
 async def root():
