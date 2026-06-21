@@ -3,7 +3,7 @@ import json
 import random
 import requests
 from dotenv import load_dotenv
-from sqlalchemy import create_engine, Column, Integer, String, Text
+from sqlalchemy import create_engine, Column, Integer, String, Text, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -32,17 +32,28 @@ class RecommendationState(Base):
 
 # Create tables
 Base.metadata.create_all(bind=engine)
-
+with engine.begin() as conn:
+    pass
 # Dynamic migrations for SQLite to ensure safety without losing data
 try:
     with engine.connect() as conn:
-        result = conn.execute("PRAGMA table_info(recommendation_state);").fetchall()
+        result = conn.execute(
+            text("PRAGMA table_info(recommendation_state);")
+        ).fetchall()
         columns = [row[1] for row in result]
         if "confidence" not in columns:
-            conn.execute("ALTER TABLE recommendation_state ADD COLUMN confidence INTEGER DEFAULT NULL;")
+            conn.execute(
+    text(
+        "ALTER TABLE recommendation_state ADD COLUMN confidence INTEGER DEFAULT NULL;"
+    )
+)
             print("[trust_companion_service] Migration: Added 'confidence' column to recommendation_state.")
         if "last_question_relevant" not in columns:
-            conn.execute("ALTER TABLE recommendation_state ADD COLUMN last_question_relevant BOOLEAN DEFAULT 0;")
+            conn.execute(
+    text(
+        "ALTER TABLE recommendation_state ADD COLUMN last_question_relevant BOOLEAN DEFAULT 0;"
+    )
+)
             print("[trust_companion_service] Migration: Added 'last_question_relevant' column to recommendation_state.")
 except Exception as e:
     print(f"[trust_companion_service] Migration error/warning: {e}")
