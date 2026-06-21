@@ -122,8 +122,23 @@ app.mount("/assets", StaticFiles(directory="dist/assets"), name="assets")
 async def root():
     return FileResponse("dist/index.html")
 
+
 @app.get("/{full_path:path}")
 async def serve_react(full_path: str):
+
+    # Allow FastAPI routes to work normally
+    api_routes = [
+        "trust-chat",
+        "agent-chain",
+        "autonomy-level",
+        "docs",
+        "redoc",
+        "openapi.json"
+    ]
+
+    if any(full_path.startswith(route) for route in api_routes):
+        raise HTTPException(status_code=404)
+
     return FileResponse("dist/index.html")
 
 if __name__ == "__main__":

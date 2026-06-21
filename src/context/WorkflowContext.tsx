@@ -200,7 +200,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const loadAutonomyLevel = async () => {
     try {
-      const res = await fetch('/api/autonomy-level');
+      const res = await fetch('/autonomy-level');
       if (res.ok) {
         const data = await res.json();
         setAutonomyLevelState(data.level ?? 2);
@@ -213,7 +213,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({ children }
   const setAutonomyLevel = async (level: number) => {
     setAutonomyLevelState(level);
     try {
-      await fetch('/api/autonomy-level', {
+      await fetch('/autonomy-level', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ level })
@@ -225,7 +225,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const loadAgentChain = async (recId: string) => {
     try {
-      const res = await fetch(`/api/agent-chain/${recId}`);
+      const res = await fetch(`/agent-chain/${recId}`);
       if (res.ok) {
         const data = await res.json();
         setAgentChain(data.agents || []);
@@ -314,7 +314,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({ children }
     const targetRec = recommendations.find((r) => r.id === recId) || recommendations[0];
     loadAgentChain(recId);
     try {
-      const res = await fetch(`/api/trust-chat/${recId}`);
+      const res = await fetch(`/trust-chat/${recId}`);
       if (res.ok) {
         const data = await res.json();
         setCompanionMessages(data.messages || []);
@@ -386,7 +386,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({ children }
     setCompanionMessages((prev) => [...prev, { role: 'user', content: message }]);
     
     try {
-      const res = await fetch('/api/trust-chat', {
+      const res = await fetch('/trust-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ recommendation_id: activeRecId, message })
@@ -481,7 +481,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const sendFeedback = async (helpful: boolean) => {
     try {
-      const res = await fetch('/api/trust-chat/feedback', {
+      const res = await fetch('/trust-chat/feedback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ recommendation_id: activeRecId, helpful })
