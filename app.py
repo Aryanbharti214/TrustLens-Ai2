@@ -1,3 +1,5 @@
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -112,6 +114,17 @@ def post_autonomy_level(req: AutonomyLevelRequest, db=Depends(get_db)):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+# Serve Vite assets
+app.mount("/assets", StaticFiles(directory="dist/assets"), name="assets")
+
+# Serve React frontend
+@app.get("/")
+async def root():
+    return FileResponse("dist/index.html")
+
+@app.get("/{full_path:path}")
+async def serve_react(full_path: str):
+    return FileResponse("dist/index.html")
 
 if __name__ == "__main__":
     import uvicorn
